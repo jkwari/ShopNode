@@ -2,10 +2,10 @@ const Product = require("../models/product");
 const Cart = require("../models/Cart");
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
-    .then(([rows, datafield]) => {
+  Product.findAll()
+    .then((products) => {
       res.render("shop/product-list", {
-        prods: rows,
+        prods: products,
         pageTitle: "All Products",
         path: "/products",
       });
@@ -17,12 +17,13 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProductDetails = (req, res, next) => {
   const prodID = req.params.productID;
-  Product.fetchProductById(prodID)
-    .then(([rows]) => {
+  // This method finds a product by its Primary Key it is similar to findById
+  Product.findByPk(prodID)
+    .then((row) => {
       res.render("shop/product-detail", {
         pageTitle: "Details",
         path: "/productDetail/:productID",
-        product: rows[0],
+        product: row,
       });
     })
     .catch((error) => {
@@ -33,15 +34,17 @@ exports.getProductDetails = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
-    .then(([rows, datafields]) => {
+  Product.findAll()
+    .then((products) => {
       res.render("shop/index", {
-        prods: rows,
+        prods: products,
         pageTitle: "Shop",
         path: "/",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 exports.getCart = (req, res, next) => {
