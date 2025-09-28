@@ -1,5 +1,28 @@
 const Product = require("../models/product");
+const User = require("../models/user");
 
+exports.getRegister = (req, res, next) => {
+  res.render("admin/users", {
+    pageTitle: "Register Page",
+    path: "/admin/register",
+  });
+};
+exports.postRegister = (req, res, next) => {
+  const nameForm = req.body.name;
+  const emailForm = req.body.email;
+
+  User.create({
+    name: nameForm,
+    email: emailForm,
+  })
+    .then((result) => {
+      console.log(`Welcome, ${nameForm} is our Admin` + result);
+      res.redirect("/admin/products");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
     pageTitle: "Add Product",
@@ -18,6 +41,7 @@ exports.postAddProduct = (req, res, next) => {
     price: price,
     imageUrl: imageUrl,
     description: description,
+    userUserId: 2,
   })
     .then((result) => {
       // console.log(result);

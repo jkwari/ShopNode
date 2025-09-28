@@ -4,6 +4,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const sequelize = require("./util/db");
 
+// Import our Models here:
+const Product = require("./models/product");
+const User = require("./models/user");
+
 const errorController = require("./controllers/error");
 
 const app = express();
@@ -36,7 +40,18 @@ app.use(errorController.get404);
 // a feature to look our models file and create whatever tables we have
 // their but if and only if it is  not created before so it doesn't
 // override our table
+
+// Here we will declare our relations before synchronizing it to database:
+// onDelete property insures if the User has been deleted any  products done
+// by the user will be deleted as well;
+Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
+User.hasMany(Product);
 sequelize
+  // Now sync's job is to create those models and add them to DB but if we want
+  // to alter the database we can use propert called "force" where it will
+  // force the changes we added to the database by dropping the old tables
+  // and replace them with the new ones including the relations(Associations).
+  // .sync({ force: true })
   .sync()
   .then((result) => {
     // console.log(result);
