@@ -7,6 +7,8 @@ const sequelize = require("./util/db");
 // Import our Models here:
 const Product = require("./models/product");
 const User = require("./models/user");
+const Cart = require("./models/Cart");
+const CartItem = require("./models/cart-Item");
 
 const errorController = require("./controllers/error");
 
@@ -31,6 +33,17 @@ const shopRoutes = require("./routes/shop");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use((req, res, next) => {
+  User.findByPk(1)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+});
+
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
@@ -46,6 +59,14 @@ app.use(errorController.get404);
 // by the user will be deleted as well;
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+// Since Many to Many relations require third table to store productID key
+// and CartID key so here comes the through property it tells mysql where
+// to store those keys in otherwords our third table is "CartItem";
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
+
 sequelize
   // Now sync's job is to create those models and add them to DB but if we want
   // to alter the database we can use propert called "force" where it will
@@ -55,6 +76,18 @@ sequelize
   .sync()
   .then((result) => {
     // console.log(result);
+    return User.findByPk(1);
+  })
+  .then((user) => {
+    if (!user) {
+      return User.create({ name: "Khaled", email: "k@test.com" });
+    }
+    return user;
+  })
+  .then((result) => {
+    return result.createCart();
+  })
+  .then((cart) => {
     app.listen(3000);
   })
   .catch((error) => {
