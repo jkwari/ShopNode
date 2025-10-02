@@ -1,4 +1,6 @@
 const mongodb = require("mongodb");
+// This _ means that this variable will be only used only in this file;
+let _db;
 
 const MongoClient = mongodb.MongoClient;
 const mongoConnect = (callback) => {
@@ -7,7 +9,10 @@ const mongoConnect = (callback) => {
   )
     .then((client) => {
       console.log("Connected!!!");
-      callback(client);
+      // Here we are telling Mongo what is the name of the Database that it needs to
+      // create once we supply it with data.
+      _db = client.db("Shop");
+      callback();
     })
     .catch((error) => {
       console.log(error);
@@ -15,5 +20,13 @@ const mongoConnect = (callback) => {
       console.log("Not Connected");
     });
 };
+
+const getDb = () => {
+  if (_db) {
+    return _db;
+  }
+  return "NO Database";
+};
 // We are exporting a function here because mongoConnect is a function
-module.exports = mongoConnect;
+exports.mongoConnect = mongoConnect;
+exports.getDb = getDb;
