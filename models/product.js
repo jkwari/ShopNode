@@ -3,12 +3,13 @@ const { get } = require("../routes/admin");
 const getDb = require("../util/db").getDb;
 
 class Product {
-  constructor(title, price, imageUrl, description, _id) {
+  constructor(title, price, imageUrl, description, _id, userId) {
     this.title = title;
     this.price = price;
     this.imageUrl = imageUrl;
     this.description = description;
     this._id = _id ? new mongoDB.ObjectId(_id) : null;
+    this.userId = userId;
   }
 
   // in order to save the data to Database we need to use the save()

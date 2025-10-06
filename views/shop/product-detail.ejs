@@ -12,7 +12,7 @@
             <p><%= product.price%></p>
             <form action="/cart" method="post">
                 <button class="btn" type="submit">Add to Cart</button>
-                <input type="hidden" name="productID" value="<%= product.id%>">
+                <input type="hidden" name="productID" value="<%= product._id%>">
                 <input type="hidden" name="title" value="<%= product.title%>">
                 <input type="hidden" name="image" value="<%= product.imageUrl%>">
                 <input type="hidden" name="price" value="<%= product.price%>">

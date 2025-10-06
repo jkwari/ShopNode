@@ -1,5 +1,5 @@
 const Product = require("../models/product");
-// const User = require("../models/user");
+const User = require("../models/user");
 
 // exports.getRegister = (req, res, next) => {
 //   res.render("admin/users", {
@@ -36,7 +36,14 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  const product = new Product(title, price, imageUrl, description);
+  const product = new Product(
+    title,
+    price,
+    imageUrl,
+    description,
+    null,
+    req.user._id
+  );
   product
     .save()
     .then((result) => {
