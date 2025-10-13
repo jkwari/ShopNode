@@ -33,7 +33,7 @@ exports.getProductDetails = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("shop/index", {
         prods: products,
@@ -47,12 +47,9 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  // console.log(
-  //   "I want to know what is this method returning " + req.user.getCart()
-  // );
-
-  req.user.getCart().then((products) => {
-    // console.log("This is comming from the Controller: " + products);
+  req.user.populate("cart.items.productId").then((user) => {
+    const products = user.cart.items;
+    console.log(user.cart.items);
 
     res.render("shop/cart", {
       path: "/cart",
@@ -66,6 +63,8 @@ exports.postCart = (req, res, next) => {
   const prodID = req.body.productID;
   Product.findById(prodID)
     .then((product) => {
+      console.log(product);
+
       return req.user.addToCart(product);
     })
     .then((result) => {

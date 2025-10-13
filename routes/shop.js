@@ -8,18 +8,18 @@ const router = express.Router();
 
 router.get("/", shopController.getIndex);
 
-router.get("/products", shopController.getProducts);
+// router.get("/products", shopController.getProducts);
 
-router.get("/products/:productID", shopController.getProductDetails);
+// router.get("/products/:productID", shopController.getProductDetails);
 
 router.get("/cart", shopController.getCart);
 
 router.post("/cart", shopController.postCart);
 
-router.post("/remove-item-cart", shopController.removeItemFromCart);
+// router.post("/remove-item-cart", shopController.removeItemFromCart);
 
-// router.get("/orders", shopController.getOrders);
-router.get("/orders", shopController.postOrders);
+// // router.get("/orders", shopController.getOrders);
+// router.get("/orders", shopController.postOrders);
 
 // router.get("/checkout", shopController.getCheckout);
 

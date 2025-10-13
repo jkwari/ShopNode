@@ -3,10 +3,9 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongodb = require("mongodb");
+const mongoose = require("mongoose");
 
 const errorController = require("./controllers/error");
-const mongo = require("./util/db").mongoConnect;
-
 const User = require("./models/user");
 
 const app = express();
@@ -31,11 +30,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  User.findById("68e03b741f36bc28bf3bd892")
+  User.findById("68ed7150a3b785793ca98bec")
     .then((user) => {
       // We are storing the entire Object of a user in order to use its methods
       // and attributes
-      req.user = new User(user.username, user.email, user.cart, user._id);
+      req.user = user;
       // console.log("comming from app.js " + user);
 
       next();
@@ -50,6 +49,26 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-mongo(() => {
-  app.listen(3000);
-});
+mongoose
+  .connect(
+    "mongodb+srv://JKW:z4dFjSmIzzwK6RVD@cluster0.jzrmoxo.mongodb.net/store?retryWrites=true&w=majority&appName=Cluster0"
+  )
+  .then((result) => {
+    User.findOne().then((user) => {
+      if (!user) {
+        const user = new User({
+          username: "Jamal Wari",
+          email: "jamalwari@gmail.com",
+          cart: [],
+        });
+
+        user.save();
+      }
+    });
+
+    console.log("Connected !!!!!");
+    app.listen(3000);
+  })
+  .catch((error) => {
+    console.log(error);
+  });

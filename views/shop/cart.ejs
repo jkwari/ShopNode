@@ -6,9 +6,9 @@
          <div class="centered">
         <% if(products.length>0) {%>
             <% products.forEach(product =>{%>
-                <p><%= product.title%></p>
-                <img src="<%= product.imageUrl%>" alt="<%=product.title%>">
-                <p>Product Price: <%= product.price%></p>
+                <p><%= product.productId.title%></p>
+                <img src="<%= product.productId.imageUrl%>" alt="<%=product.productId.title%>">
+                <p>Product Price: <%= product.productId.price%></p>
                 <p>Quantity: <%= product.quantity%></p>
 
                 <form action="/remove-item-cart" method="POST">
