@@ -59,7 +59,7 @@ mongoose
         const user = new User({
           username: "Jamal Wari",
           email: "jamalwari@gmail.com",
-          cart: [],
+          cart: { items: [] },
         });
 
         user.save();
