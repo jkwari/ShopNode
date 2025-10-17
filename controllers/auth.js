@@ -21,3 +21,12 @@ exports.postLoginForm = (req, res, next) => {
       console.log(error);
     });
 };
+
+exports.postLogout = (req, res, next) => {
+  req.session.destroy((error) => {
+    if (error) {
+      console.log(error);
+    }
+    res.redirect("/");
+  });
+};

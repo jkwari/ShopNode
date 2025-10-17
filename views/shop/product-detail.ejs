@@ -10,6 +10,7 @@
             <img src="<%= product.imageUrl%>" alt="<%= product.title%>" >
             <p><%= product.description%></p>
             <p><%= product.price%></p>
+            <% if (isAuthenticated){ %>
             <form action="/cart" method="post">
                 <button class="btn" type="submit">Add to Cart</button>
                 <input type="hidden" name="productID" value="<%= product._id%>">
@@ -17,6 +18,9 @@
                 <input type="hidden" name="image" value="<%= product.imageUrl%>">
                 <input type="hidden" name="price" value="<%= product.price%>">
             </form>
+            <%}else{%>
+                <h6>Please Log in to addToCart</h6>
+            <%}%>
 
         </div>
         <%- include('../includes/end.ejs') %>
