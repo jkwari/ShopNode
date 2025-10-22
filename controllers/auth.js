@@ -1,4 +1,17 @@
 const User = require("../models/user");
+//  Sign up logic
+
+exports.getSignUp = (req, res, next) => {
+  res.render("auth/signup", {
+    pageTitle: "Sign Up",
+    path: "/signup",
+    isAuthenticated: req.session.isLoggedIn,
+  });
+};
+
+exports.postSignUp = (req, res, next) => {};
+
+// Log in Logic
 exports.getLoginForm = (req, res, next) => {
   // const loggedIn = req.get("Cookie").split("=")[1];
 
