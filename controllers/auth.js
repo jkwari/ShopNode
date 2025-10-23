@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const bcryptjs = require("bcryptjs");
 //  Sign up logic
 
 exports.getSignUp = (req, res, next) => {
@@ -9,7 +10,44 @@ exports.getSignUp = (req, res, next) => {
   });
 };
 
-exports.postSignUp = (req, res, next) => {};
+exports.postSignUp = (req, res, next) => {
+  const email = req.body.email;
+  const firstName = req.body.fn;
+  const lastName = req.body.ln;
+  const password = req.body.password;
+  const confirmedPassword = req.body.cp;
+
+  User.findOne({ email: email })
+    .then((userDoc) => {
+      // If the Email Exists in the Database we can't have duplicate Emails
+      if (userDoc) {
+        return res.redirect("/signup");
+      }
+      // number 12 the number of hashing this password will encounter
+      return bcryptjs
+        .hash(password, 12)
+        .then((hasedPassword) => {
+          // Create a new user and save it to the Database
+          const user = new User({
+            email: email,
+            firstName: firstName,
+            lastName: lastName,
+            password: hasedPassword,
+            cart: { items: [] },
+          });
+          return user.save();
+        })
+        .then(() => {
+          res.redirect("/login");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 
 // Log in Logic
 exports.getLoginForm = (req, res, next) => {
@@ -23,12 +61,43 @@ exports.getLoginForm = (req, res, next) => {
 };
 
 exports.postLoginForm = (req, res, next) => {
-  // This is our dummy user that we want to use for our entire application
-  User.findById("68ed7150a3b785793ca98bec")
+  const email = req.body.email;
+  const password = req.body.password;
+
+  User.findOne({ email: email })
     .then((user) => {
-      req.session.isLoggedIn = true;
-      req.session.user = user;
-      res.redirect("/");
+      if (user) {
+        // If we have a user we need to check password if matches the stored one in the DB
+        // Please note that Password in the DB is Hashed so we need to use a compare method
+        // provided by bcrypt Library.
+        // Also compare method will return a boolean value we store it in match
+
+        bcryptjs
+          .compare(password, user.password)
+          .then((match) => {
+            if (match) {
+              // if there is a match between the given pass and the pass in the DB then
+              // Establish a session and store the user info in the session
+              req.session.isLoggedIn = true;
+              req.session.user = user;
+              return req.session.save((err) => {
+                if (err) {
+                  console.log(err);
+                }
+                res.redirect("/");
+              });
+            } else {
+              // Problem with password then redirect to login page
+              return res.redirect("/login");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        // If the email is not found in the database then redirect to login page
+        return res.redirect("/login");
+      }
     })
     .catch((error) => {
       console.log(error);

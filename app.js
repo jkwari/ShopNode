@@ -1,8 +1,6 @@
 const path = require("path");
-
 const express = require("express");
 const bodyParser = require("body-parser");
-const mongodb = require("mongodb");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDbStore = require("connect-mongodb-session")(session);
@@ -69,19 +67,7 @@ app.use(errorController.get404);
 
 mongoose
   .connect(MONGODB_URI)
-  .then((result) => {
-    User.findOne().then((user) => {
-      if (!user) {
-        const user = new User({
-          username: "Jamal Wari",
-          email: "jamalwari@gmail.com",
-          cart: { items: [] },
-        });
-
-        user.save();
-      }
-    });
-
+  .then(() => {
     console.log("Connected !!!!!");
     app.listen(3000);
   })
