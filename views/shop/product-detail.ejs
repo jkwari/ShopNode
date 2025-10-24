@@ -17,6 +17,8 @@
                 <input type="hidden" name="title" value="<%= product.title%>">
                 <input type="hidden" name="image" value="<%= product.imageUrl%>">
                 <input type="hidden" name="price" value="<%= product.price%>">
+                <input type="hidden" name ="_csrf" value="<%= csrfToken%>">
+
             </form>
             <%}else{%>
                 <h6>Please Log in to addToCart</h6>

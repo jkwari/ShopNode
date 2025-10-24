@@ -1,34 +1,12 @@
 const { mongo } = require("mongoose");
 const mongodb = require("mongodb");
 const Product = require("../models/product");
-// exports.getRegister = (req, res, next) => {
-//   res.render("admin/users", {
-//     pageTitle: "Register Page",
-//     path: "/admin/register",
-//   });
-// };
-// exports.postRegister = (req, res, next) => {
-//   const nameForm = req.body.name;
-//   const emailForm = req.body.email;
 
-//   User.create({
-//     name: nameForm,
-//     email: emailForm,
-//   })
-//     .then((result) => {
-//       console.log(`Welcome, ${nameForm} is our Admin` + result);
-//       res.redirect("/admin/products");
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//     });
-// };
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
     pageTitle: "Add Product",
     path: "/admin/add-product",
     editing: false,
-    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -71,7 +49,6 @@ exports.getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         editing: editMode,
         product: product[0],
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((error) => {
@@ -121,7 +98,6 @@ exports.getProducts = (req, res, next) => {
         prods: products,
         pageTitle: "Admin Products",
         path: "/admin/products",
-        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((error) => {

@@ -14,6 +14,8 @@ const store = new MongoDbStore({
 
 const errorController = require("./controllers/error");
 const User = require("./models/user");
+const csrf = require("csurf");
+const flash = require("connect-flash");
 
 const app = express();
 
@@ -30,6 +32,8 @@ const app = express();
 app.set("view engine", "ejs");
 app.set("views", "views");
 
+const csrfProtection = csrf();
+
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
@@ -43,6 +47,8 @@ app.use(
     store: store,
   })
 );
+app.use(csrfProtection);
+app.use(flash());
 
 app.use((req, res, next) => {
   // if we are not log in we don't excute the code below this if statement;
@@ -57,6 +63,12 @@ app.use((req, res, next) => {
     .catch((error) => {
       console.log(error);
     });
+});
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 app.use("/admin", adminRoutes);

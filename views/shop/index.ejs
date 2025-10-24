@@ -7,6 +7,7 @@
 
     <main>
         <% if (prods.length > 0) { %>
+           
             <div class="grid">
                 <% for (let product of prods) { %>
                     <article class="card product-item">
@@ -23,6 +24,8 @@
                         </div>
                         <% if(isAuthenticated){ %>
                      <form action="/cart" method="post">
+                         <input type="hidden" name ="_csrf" value="<%= csrfToken%>">
+
                         <button class="btn" type="submit">Add to Cart</button>
                         <input type="hidden" name="productID" value="<%= product._id%>">
                     </form>

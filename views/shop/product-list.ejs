@@ -30,6 +30,8 @@
                                     <a class="btn" href="/products/<%= product._id%>">Details</a>
                                     <%if (isAuthenticated) {%>
                                         <form action="/cart" method="post">
+                                                <input type="hidden" name ="_csrf" value="<%= csrfToken%>">
+
                                                 <button class="btn" type="submit">Add to Cart</button>
                                                 <input type="hidden" name="productID" value="<%= product._id%>">
                                         </form>

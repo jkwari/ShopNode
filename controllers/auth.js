@@ -3,10 +3,16 @@ const bcryptjs = require("bcryptjs");
 //  Sign up logic
 
 exports.getSignUp = (req, res, next) => {
+  let message = req.flash("error");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
   res.render("auth/signup", {
     pageTitle: "Sign Up",
     path: "/signup",
-    isAuthenticated: req.session.isLoggedIn,
+    errorMessage: message,
   });
 };
 
@@ -21,6 +27,7 @@ exports.postSignUp = (req, res, next) => {
     .then((userDoc) => {
       // If the Email Exists in the Database we can't have duplicate Emails
       if (userDoc) {
+        req.flash("error", "Email already exist");
         return res.redirect("/signup");
       }
       // number 12 the number of hashing this password will encounter
@@ -53,10 +60,17 @@ exports.postSignUp = (req, res, next) => {
 exports.getLoginForm = (req, res, next) => {
   // const loggedIn = req.get("Cookie").split("=")[1];
 
+  let message = req.flash("error");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+
   res.render("auth/login", {
     pageTitle: "Login",
     path: "/login",
-    isAuthenticated: req.session.isLoggedIn,
+    errorMessage: message,
   });
 };
 
@@ -88,6 +102,7 @@ exports.postLoginForm = (req, res, next) => {
               });
             } else {
               // Problem with password then redirect to login page
+              req.flash("error", "Invalid Email or Password");
               return res.redirect("/login");
             }
           })
@@ -96,6 +111,7 @@ exports.postLoginForm = (req, res, next) => {
           });
       } else {
         // If the email is not found in the database then redirect to login page
+        req.flash("error", "Invalid Email or Password");
         return res.redirect("/login");
       }
     })
