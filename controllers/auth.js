@@ -6,7 +6,8 @@ const sendGrid = require("nodemailer-sendgrid-transport");
 const transporter = mailer.createTransport(
   sendGrid({
     auth: {
-      api_key: "",
+      api_key:
+        "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",
     },
   })
 );
@@ -56,7 +57,7 @@ exports.postSignUp = (req, res, next) => {
         })
         .then(() => {
           res.redirect("/login");
-          transporter.sendMail({
+          return transporter.sendMail({
             to: email,
             from: "shop@nodeshop.com",
             subject: "Welcome to node shop",
