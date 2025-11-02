@@ -137,6 +137,54 @@ exports.postLoginForm = (req, res, next) => {
     });
 };
 
+exports.getReset = (req, res, next) => {
+  res.render("auth/reset", {
+    pageTitle: "Reset Password",
+    path: "/reset",
+  });
+};
+
+exports.postReset = (req, res, next) => {
+  // we want to get the data the user entered in the form(Password and email).
+  const newPass = req.body.cPass;
+  const userEmail = req.body.email;
+  // We want to find the user if exist then we want to hash it to protect the new password.
+  User.findOne({ email: userEmail }).then((foundUser) => {
+    if (!foundUser) {
+      req.flash("error", "Email Does Not Exist");
+      res.redirect("/reset");
+    } else {
+      bcryptjs
+        .hash(newPass, 12)
+        .then((hashedNewPassword) => {
+          // update the password field in the database with our new password.
+          return User.updateOne(
+            { email: userEmail },
+            {
+              $set: {
+                password: hashedNewPassword,
+              },
+            }
+          )
+            .then((result) => {
+              if (result) {
+                console.log("update Successfully!!!!");
+                res.redirect("/login");
+              }
+            })
+            .catch((error) => {
+              console.log(
+                "This error is coming from updateOne Execution " + error
+              );
+            });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  });
+};
+
 exports.postLogout = (req, res, next) => {
   req.session.destroy((error) => {
     if (error) {
