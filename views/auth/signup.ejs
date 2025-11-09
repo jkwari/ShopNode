@@ -30,6 +30,11 @@
                 <label for="cp">Confirm Password</label>
                 <input type="password" name="cp" id="cp" placeholder="Enter Confirmed Password">
             </div>
+                <label for="role">Role: </label>
+                <input type="radio" name="role" id="" value="admin"> Admin
+                <input type="radio" name="role" id="" value="user"> User
+
+                <br><br>
              <%if (errorMessage) {%>
             <p><%= errorMessage%></p>
             <% }%>
