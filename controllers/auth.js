@@ -7,8 +7,7 @@ const { signAccessToken, refershToken, verifyToken } = require("../util/token");
 const transporter = mailer.createTransport(
   sendGrid({
     auth: {
-      api_key:
-        "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",
+      api_key: process.env.SENDGRID_API_KEY,
     },
   })
 );
