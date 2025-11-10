@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDbStore = require("connect-mongodb-session")(session);
 const cookieParser = require("cookie-parser");
+require("dotenv").config();
 const MONGODB_URI =
   "mongodb+srv://JKW:z4dFjSmIzzwK6RVD@cluster0.jzrmoxo.mongodb.net/store?&w=majority&appName=Cluster0";
 

@@ -134,6 +134,7 @@ exports.postLoginForm = (req, res, next) => {
                 maxAge: 7 * 24 * 60 * 60 * 1000, // to match REFRESH_TOKEN_EXPIRES_IN
               });
 
+              // res.redirect("/");
               res.json({
                 accessToken,
                 user: {
