@@ -24,7 +24,7 @@ const userSchema = new Schema({
     enum: ["user", "admin"],
     default: "user",
   },
-  refershToken: {
+  refreshToken: {
     type: String,
   },
   cart: {

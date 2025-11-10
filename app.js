@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDbStore = require("connect-mongodb-session")(session);
+const cookieParser = require("cookie-parser");
 const MONGODB_URI =
   "mongodb+srv://JKW:z4dFjSmIzzwK6RVD@cluster0.jzrmoxo.mongodb.net/store?&w=majority&appName=Cluster0";
 
@@ -18,6 +19,8 @@ const csrf = require("csurf");
 const flash = require("connect-flash");
 
 const app = express();
+app.use(express.json());
+app.use(cookieParser());
 
 // Since execute function is a promise function which deals with ASYNC code
 // We can use .then(). catch()
@@ -39,6 +42,7 @@ const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+
 app.use(
   session({
     secret: "my secret",

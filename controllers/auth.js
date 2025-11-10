@@ -162,6 +162,49 @@ exports.postLoginForm = (req, res, next) => {
     });
 };
 
+exports.getRefreshToken = (req, res, next) => {
+  const token = req.cookies.refershToken;
+  if (!token) {
+    return res.status(401).json({ message: "NO REFRESH TOKEN PROVIDED" });
+  }
+  // here there is a token
+
+  let payload;
+  try {
+    payload = verifyToken(token); // here we need to verify the token with the secret
+  } catch (error) {
+    return res
+      .status(401)
+      .json({ message: "Invalid or expired refresh token " });
+  }
+  User.findById(payload.id).then((user) => {
+    if (!user || user.refreshToken !== token) {
+      res.status(401).json({ message: "Refresh Token not recognized" });
+    }
+    const newPayload = { id: user.id, role: user.role };
+    const newAccessToken = signAccessToken(newPayload);
+    const newRefreshToken = refershToken(newPayload);
+
+    user.refreshToken = newRefreshToken;
+    return user
+      .save()
+      .then(() => {
+        res.cookie("refreshToken", newRefreshToken, {
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.COOKIE_SECURE === "true",
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        res.json({
+          accessToken: newAccessToken,
+        });
+      })
+      .catch((error) => {
+        res.status(401).json({ mesaage: "Server Error", error: error.message });
+      });
+  });
+};
+
 exports.getReset = (req, res, next) => {
   res.render("auth/reset", {
     pageTitle: "Reset Password",
@@ -211,10 +254,61 @@ exports.getReset = (req, res, next) => {
 // };
 
 exports.postLogout = (req, res, next) => {
-  req.session.destroy((error) => {
-    if (error) {
-      console.log(error);
-    }
-    res.redirect("/");
-  });
+  // OLD CODE
+  // req.session.destroy((error) => {
+  //   if (error) {
+  //     console.log(error);
+  //   }
+  //   res.redirect("/");
+  // });
+
+  const token = req.cookies.refreshToken;
+  if (!token) {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.COOKIE_SECURE === "true",
+    });
+    return res.json({ message: "logged out successfully" });
+  }
+  let payload;
+  try {
+    payload = verifyToken(token);
+  } catch (error) {
+    payload = null;
+  }
+  if (!payload) {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.COOKIE_SECURE === "true",
+    });
+    return res.json({ message: "logged out Successfully" });
+  }
+  User.findById(payload.id)
+    .then((user) => {
+      if (!user) {
+        res.clearCookie("refreshToken");
+        return res.json({ message: "Logged out Successfully" });
+      }
+      user.refreshToken = null;
+      user
+        .save()
+        .then(() => {
+          res.clearCookie("refreshToken", {
+            httpOnly: true,
+            sameSite: "lax",
+            secure: proccess.env.COOKIE_SECURE === "true",
+          });
+          res.json({ message: "Logged Out Successfully" });
+        })
+        .catch((error) => {
+          res
+            .status(401)
+            .json({ message: "Error in saving ", error: error.message });
+        });
+    })
+    .catch((error) => {
+      res.status(401).json({ message: "Server Error:", error: error.message });
+    });
 };
