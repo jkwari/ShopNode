@@ -36,8 +36,6 @@ const csrfProtection = csrf();
 
 // JWT Global Auth Check
 app.use((req, res, next) => {
-  console.log("I am trying something!!!!!!");
-
   const token = req.cookies.refreshToken;
   if (!token) {
     res.locals.isAuthenticated = false;
