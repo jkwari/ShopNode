@@ -134,15 +134,15 @@ exports.postLoginForm = (req, res, next) => {
                 maxAge: 7 * 24 * 60 * 60 * 1000, // to match REFRESH_TOKEN_EXPIRES_IN
               });
 
-              // res.redirect("/");
-              res.json({
-                accessToken,
-                user: {
-                  id: user._id,
-                  email: user.email,
-                  role: user.role,
-                },
-              });
+              res.redirect("/");
+              // res.json({
+              //   accessToken,
+              //   user: {
+              //     id: user._id,
+              //     email: user.email,
+              //     role: user.role,
+              //   },
+              // });
             } else {
               // Problem with password then redirect to login page
               req.flash("error", "Invalid Email or Password");

@@ -13,14 +13,14 @@ router.get("/products", shopController.getProducts);
 
 router.get("/products/:productID", shopController.getProductDetails);
 
-router.get("/cart", isAuth, shopController.getCart);
+router.get("/cart", shopController.getCart);
 
-router.post("/cart", isAuth, shopController.postCart);
+router.post("/cart", shopController.postCart);
 
-router.post("/remove-item-cart", isAuth, shopController.removeItemFromCart);
+router.post("/remove-item-cart", shopController.removeItemFromCart);
 
-router.get("/orders", isAuth, shopController.getOrders);
-router.post("/orders", isAuth, shopController.postOrders);
+router.get("/orders", shopController.getOrders);
+router.post("/orders", shopController.postOrders);
 
 // router.get("/checkout", shopController.getCheckout);
 

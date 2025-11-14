@@ -5,44 +5,57 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDbStore = require("connect-mongodb-session")(session);
 const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const MONGODB_URI =
-  "mongodb+srv://JKW:z4dFjSmIzzwK6RVD@cluster0.jzrmoxo.mongodb.net/store?&w=majority&appName=Cluster0";
 
 const store = new MongoDbStore({
-  uri: MONGODB_URI,
+  uri: process.env.MONGODB_URI,
   collection: "sessions",
 });
 
+const adminRoutes = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
+
 const errorController = require("./controllers/error");
 const User = require("./models/user");
+
 const csrf = require("csurf");
 const flash = require("connect-flash");
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-
-// Since execute function is a promise function which deals with ASYNC code
-// We can use .then(). catch()
-// db.execute("SELECT * FROM products")
-//   .then((result) => {
-//     console.log(result);
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.set("view engine", "ejs");
 app.set("views", "views");
 
 const csrfProtection = csrf();
 
-const adminRoutes = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
-const authRoutes = require("./routes/auth");
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, "public")));
+// JWT Global Auth Check
+app.use((req, res, next) => {
+  console.log("I am trying something!!!!!!");
+
+  const token = req.cookies.refreshToken;
+  if (!token) {
+    res.locals.isAuthenticated = false;
+    return next();
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("Are we reaching here");
+
+    res.locals.isAuthenticated = true;
+    req.user = { id: payload.userId, role: payload.role };
+    console.log("Print the user Details: " + req.user);
+  } catch {
+    res.locals.isAuthenticated = false;
+  }
+  next();
+});
 
 app.use(
   session({
@@ -52,6 +65,7 @@ app.use(
     store: store,
   })
 );
+
 app.use(csrfProtection);
 app.use(flash());
 
@@ -71,7 +85,8 @@ app.use((req, res, next) => {
 });
 
 app.use((req, res, next) => {
-  res.locals.isAuthenticated = req.session.isLoggedIn;
+  // NO NEED TO SET isAuthenticated here manually now it is being handled
+  // in middleware/isAuth.js file
   res.locals.csrfToken = req.csrfToken();
   next();
 });
@@ -83,7 +98,7 @@ app.use(authRoutes);
 app.use(errorController.get404);
 
 mongoose
-  .connect(MONGODB_URI)
+  .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("Connected !!!!!");
     app.listen(3000);
